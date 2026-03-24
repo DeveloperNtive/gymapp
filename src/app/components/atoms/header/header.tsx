@@ -1,11 +1,11 @@
 'use client';
 
-import path from 'path';
 import './header.scss';
 import { usePathname } from 'next/navigation';
 
-export default function HeaderComponent({ headerTitle }: { headerTitle?: string }) {
-   const pathname = usePathname();
+export default function HeaderComponent() {
+  const pathname = usePathname();
+
   return (
     <div className="header">
       {pathname === '/rutine' && <h1>Mi Rutina</h1>}

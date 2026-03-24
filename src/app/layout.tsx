@@ -41,9 +41,11 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
         />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-screen flex flex-col bg-white">
         <HeaderComponent/>
-        {children}
+        <main className="flex-1 overflow-y-auto pt-20 pb-20">
+          {children}
+        </main>
         <TabClientWrapper />
       </body>
     </html>
