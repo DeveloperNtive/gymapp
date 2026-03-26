@@ -6,7 +6,7 @@ import { useState } from 'react';
 const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
 export default function WeekComponent() {
-    const [selected, setSelected] = useState<number | null>(null);
+    const [selected, setSelected] = useState<number | null>(0);
     return (
         <div className="container">
             {days.map((d, i) => (

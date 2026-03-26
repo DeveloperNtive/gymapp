@@ -43,7 +43,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-white">
         <HeaderComponent/>
-        <main className="flex-1 overflow-y-auto pt-20 pb-20">
+        <main className="flex-1 overflow-y-auto pt-10 pb-20">
           {children}
         </main>
         <TabClientWrapper />
