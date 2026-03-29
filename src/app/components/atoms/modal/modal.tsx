@@ -4,9 +4,10 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 
@@ -16,9 +17,11 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Box from '@mui/material/Box';
+import type { RutineCardData } from '../card/card';
 import './modal.scss';
 
 const EXERCISES = ["Press banca", "Sentadilla", "Peso muerto", "Dominadas", "Curl bíceps", "Press militar"];
@@ -28,8 +31,11 @@ type Inputs = {
     ejercicio: string;
     series: number;
     repeticiones: number;
+    esUnilateral: boolean;
     peso: number;
     unidadPeso: "KG" | "LB";
+    pesoUnilateral: number;
+    unidadPesoUnilateral: "KG" | "LB";
     descanso: number;
     unidadDescanso: "min" | "seg";
     frecuencia: number;
@@ -45,7 +51,7 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AlertDialogSlide({ open, handleClose }: { open: boolean, handleClose: () => void }) {
+export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }: { open: boolean, handleClose: () => void, onSubmitHandler: (rutine: Omit<RutineCardData, 'id'>) => void }) {
     const {
         register,
         handleSubmit,
@@ -55,20 +61,24 @@ export default function AlertDialogSlide({ open, handleClose }: { open: boolean,
         formState: { errors },
     } = useForm<Inputs>({
         defaultValues: {
-            ejercicio: '',
-            series: 1,
-            repeticiones: 1,
-            peso: 0,
+            ejercicio: EXERCISES[0],
+            series: 4,
+            repeticiones: 8,
+            esUnilateral: true,
+            peso: 100,
             unidadPeso: 'KG',
-            descanso: 0,
+            pesoUnilateral: 50,
+            unidadPesoUnilateral: 'KG',
+            descanso: 3,
             unidadDescanso: 'min',
-            frecuencia: 1,
-            dias: [],
+            frecuencia: 2,
+            dias: ['Lunes', 'Martes'],
         },
     });
 
     const frecuencia = watch('frecuencia');
     const diasSeleccionados = watch('dias');
+    const esUnilateral = watch('esUnilateral');
 
     // Limitar la selección de días según la frecuencia
     React.useEffect(() => {
@@ -78,8 +88,8 @@ export default function AlertDialogSlide({ open, handleClose }: { open: boolean,
     }, [frecuencia, diasSeleccionados, setValue]);
 
     const onSubmit: SubmitHandler<Inputs> = (data) => {
-        console.log(data);
         handleClose();
+        onSubmitHandler(data);
     };
 
     return (
@@ -93,7 +103,26 @@ export default function AlertDialogSlide({ open, handleClose }: { open: boolean,
                 onClose={() => handleClose()}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>{"Crea tu rutina"}</DialogTitle>
+                <DialogTitle
+                    sx={{
+                        m: 0,
+                        pr: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 1,
+                    }}
+                >
+                    Crea tu rutina
+                    <IconButton
+                        aria-label="Cerrar"
+                        onClick={handleClose}
+                        edge="end"
+                        sx={{ color: (theme) => theme.palette.grey[500] }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
                 <DialogContent>
                     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
                         {/* Ejercicio selector */}
@@ -126,7 +155,53 @@ export default function AlertDialogSlide({ open, handleClose }: { open: boolean,
                             {errors.repeticiones && <span style={{ color: 'red' }}>Requerido</span>}
                         </FormControl>
 
+                        <Controller
+                            name="esUnilateral"
+                            control={control}
+                            render={({ field }) => (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={field.value}
+                                            onChange={(_, checked) => field.onChange(checked)}
+                                        />
+                                    }
+                                    label="Ejercicio unilateral (peso por lado)"
+                                />
+                            )}
+                        />
+
                         {/* Peso y unidad */}
+                        {esUnilateral && (
+                            <Box sx={{ display: 'flex', gap: 2 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel shrink htmlFor="peso-unilateral-input" className='label-field'>Peso (unilateral)</InputLabel>
+                                    <input
+                                        id="peso-unilateral-input"
+                                        type="number"
+                                        min={0}
+                                        {...register('pesoUnilateral', {
+                                            validate: (value, formValues) =>
+                                                !formValues.esUnilateral || (value !== undefined && !Number.isNaN(Number(value)) && Number(value) >= 0),
+                                        })}
+                                    />
+                                    {errors.pesoUnilateral && <span style={{ color: 'red' }}>Requerido</span>}
+                                </FormControl>
+                                <FormControl fullWidth>
+                                    <InputLabel id="unidad-peso-unilateral-label" className='label-field'>Unidad</InputLabel>
+                                    <Select
+                                        labelId="unidad-peso-unilateral-label"
+                                        label="Unidad"
+                                        defaultValue="KG"
+                                        {...register('unidadPesoUnilateral')}
+                                    >
+                                        <MenuItem value="KG">KG</MenuItem>
+                                        <MenuItem value="LB">LB</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        )}
+
                         <Box sx={{ display: 'flex', gap: 2 }}>
                             <FormControl fullWidth>
                                 <InputLabel shrink htmlFor="peso-input" className='label-field'>Peso</InputLabel>
@@ -216,9 +291,6 @@ export default function AlertDialogSlide({ open, handleClose }: { open: boolean,
                         <Button type="submit" variant="contained" color="primary">Crear rutina</Button>
                     </Box>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancelar</Button>
-                </DialogActions>
             </Dialog>
         </React.Fragment>
     );
