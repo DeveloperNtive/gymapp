@@ -35,15 +35,11 @@ export default function RutinaPage() {
       </div>{/*Iniciales de los dias de la semana*/}
       <div className="floating-action-buttons">
         <FloatingActionButtons onClick={handleClickOpen} />
-      </div>
-      <div className="rutines-component">
-        {rutines.map((rutine: Rutine) => (
-          <CardComponent key={rutine.id} rutine={rutine} />
-        ))}
-      </div>
-
-      {/*Modal*/}
-      <AlertDialogSlide open={open} handleClose={handleClose} onSubmitHandler={handleCreateRutine} />
+      </div>{/*Botones flotantes*/}
+      <div className="rutines-component">{rutines.map((rutine: Rutine) => (
+        <CardComponent key={rutine.id} rutine={rutine} />
+      ))}</div> {/*Lista de tarjetas de rutinas*/}
+      <AlertDialogSlide open={open} handleClose={handleClose} onSubmitHandler={handleCreateRutine} />{/*Modal*/}
     </div>
   )
 }

@@ -11,24 +11,21 @@
 // Barra de días: en flujo normal para evitar offsets raros (p. ej. -32px) por fixed + padding erróneo.
 // Sticky bajo el header: main tiene pt-20 (5rem) → el sticky se ancla al área útil del scroll.
 .week-component {
-    position: fixed;
-    top: 4.375rem;
-    z-index: 20;
     display: flex;
     flex-direction: row;
+    position: fixed;
     justify-content: space-between;
     align-items: center;
+    top: 4.375rem;
+    z-index: 20;
     flex-shrink: 0;
     margin: 0 1rem 0.75rem;
-    padding: 0.75rem 1rem;
+    // padding: 0.75rem 1rem;
     min-height: 4rem;
-    box-sizing: border-box;
-    width: calc(100% - 2rem);
-    max-width: 100%;
+    // width: calc(100% - 2rem);
+    // max-width: 100%;
     align-self: center;
     background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
 }
 
 .page-rutine-container .rutines-component {
