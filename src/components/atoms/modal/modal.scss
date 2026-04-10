@@ -70,3 +70,33 @@ span[style*='color: red'] {
   background-color: white;
   padding-inline: 1rem !important;
 }
+
+/* Autocomplete ejercicio: mismo alto y borde que input[type="number"] del modal */
+.modal-exercise-autocomplete {
+  width: 100%;
+
+  .MuiOutlinedInput-root {
+    min-height: 3.5rem;
+    border-radius: 8px;
+    background: #fff;
+
+    fieldset {
+      border-color: #d1d5db;
+    }
+
+    &:hover fieldset {
+      border-color: #d1d5db;
+    }
+
+    &.Mui-focused fieldset {
+      border-width: 1.5px;
+      border-color: #2563eb;
+    }
+  }
+
+  .MuiOutlinedInput-input {
+    padding: 8px 12px !important;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+}

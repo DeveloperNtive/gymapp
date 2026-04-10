@@ -10,10 +10,11 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
@@ -21,11 +22,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import ListItemText from '@mui/material/ListItemText';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Box from '@mui/material/Box';
-import type { RutineCardData } from '../card/card';
+import { RutineCardData } from '@/types/rutineCardData';
+import { EXERCISES } from '@/constants/exercises';
+import { WEEKDAYS } from '@/constants/weekday';
 import './modal.scss';
 
-const EXERCISES = ["Press banca", "Sentadilla", "Peso muerto", "Dominadas", "Curl bíceps", "Press militar"];
-const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
 type Inputs = {
     ejercicio: string;
@@ -42,6 +43,47 @@ type Inputs = {
     dias: string[];
 };
 
+const DEFAULT_FORM: Inputs = {
+    ejercicio: EXERCISES[0],
+    series: 4,
+    repeticiones: 8,
+    esUnilateral: true,
+    peso: 100,
+    unidadPeso: 'KG',
+    pesoUnilateral: 50,
+    unidadPesoUnilateral: 'KG',
+    descanso: 3,
+    unidadDescanso: 'min',
+    frecuencia: 2,
+    dias: ['Lunes', 'Martes'],
+};
+
+function rutineToFormValues(r: RutineCardData): Inputs {
+    return {
+        ejercicio: r.ejercicio,
+        series: r.series,
+        repeticiones: r.repeticiones,
+        esUnilateral: r.esUnilateral,
+        peso: r.peso,
+        unidadPeso: r.unidadPeso,
+        pesoUnilateral: r.pesoUnilateral,
+        unidadPesoUnilateral: r.unidadPesoUnilateral,
+        descanso: r.descanso,
+        unidadDescanso: r.unidadDescanso,
+        frecuencia: r.frecuencia,
+        dias: [...(r.dias ?? [])],
+    };
+}
+
+/** Incluye el valor guardado si ya no está en el catálogo (datos antiguos). */
+function exerciseOptionsForValue(currentValue: string): string[] {
+    const list = [...EXERCISES] as string[];
+    if (currentValue && !list.includes(currentValue)) {
+        return [currentValue, ...list];
+    }
+    return list;
+}
+
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
         children: React.ReactElement<any, any>;
@@ -51,30 +93,33 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }: { open: boolean, handleClose: () => void, onSubmitHandler: (rutine: Omit<RutineCardData, 'id'>) => void }) {
+export default function AlertDialogSlide({
+    open,
+    handleClose,
+    editingRutine,
+    onSave,
+}: {
+    open: boolean;
+    handleClose: () => void;
+    editingRutine: RutineCardData | null;
+    onSave: (data: Omit<RutineCardData, 'id'>, id?: number) => void;
+}) {
     const {
         register,
         handleSubmit,
         watch,
         control,
         setValue,
+        reset,
         formState: { errors },
     } = useForm<Inputs>({
-        defaultValues: {
-            ejercicio: EXERCISES[0],
-            series: 4,
-            repeticiones: 8,
-            esUnilateral: true,
-            peso: 100,
-            unidadPeso: 'KG',
-            pesoUnilateral: 50,
-            unidadPesoUnilateral: 'KG',
-            descanso: 3,
-            unidadDescanso: 'min',
-            frecuencia: 2,
-            dias: ['Lunes', 'Martes'],
-        },
+        defaultValues: DEFAULT_FORM,
     });
+
+    React.useEffect(() => {
+        if (!open) return;
+        reset(editingRutine ? rutineToFormValues(editingRutine) : DEFAULT_FORM);
+    }, [open, editingRutine, reset]);
 
     const frecuencia = watch('frecuencia');
     const diasSeleccionados = watch('dias');
@@ -88,9 +133,11 @@ export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }:
     }, [frecuencia, diasSeleccionados, setValue]);
 
     const onSubmit: SubmitHandler<Inputs> = (data) => {
+        onSave(data, editingRutine?.id);
         handleClose();
-        onSubmitHandler(data);
     };
+
+    const isEditing = editingRutine != null;
 
     return (
         <React.Fragment>
@@ -113,7 +160,7 @@ export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }:
                         gap: 1,
                     }}
                 >
-                    Crea tu rutina
+                    {isEditing ? 'Modifica tu rutina' : 'Crea tu rutina'}
                     <IconButton
                         aria-label="Cerrar"
                         onClick={handleClose}
@@ -125,21 +172,60 @@ export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }:
                 </DialogTitle>
                 <DialogContent>
                     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-                        {/* Ejercicio selector */}
-                        <FormControl fullWidth>
-                            <InputLabel id="ejercicio-label">Ejercicio</InputLabel>
-                            <Select
-                                labelId="ejercicio-label"
-                                label="Ejercicio"
-                                defaultValue=""
-                                {...register('ejercicio', { required: true })}
-                            >
-                                {EXERCISES.map((ej) => (
-                                    <MenuItem key={ej} value={ej}>{ej}</MenuItem>
-                                ))}
-                            </Select>
-                            {errors.ejercicio && <span style={{ color: 'red' }}>Requerido</span>}
-                        </FormControl>
+                        {/* Ejercicio: Autocomplete con búsqueda al escribir */}
+                        <Controller
+                            name="ejercicio"
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                                <FormControl fullWidth error={!!errors.ejercicio}>
+                                    <InputLabel
+                                        shrink
+                                        htmlFor="rutine-ejercicio"
+                                        className="label-field"
+                                        id="rutine-ejercicio-label"
+                                    >
+                                        Ejercicio
+                                    </InputLabel>
+                                    <Autocomplete
+                                        className="modal-exercise-autocomplete"
+                                        fullWidth
+                                        options={exerciseOptionsForValue(field.value)}
+                                        value={field.value || null}
+                                        onChange={(_, newValue) => field.onChange(newValue ?? '')}
+                                        onBlur={field.onBlur}
+                                        isOptionEqualToValue={(option, val) => option === val}
+                                        noOptionsText="Sin coincidencias"
+                                        ListboxProps={{ style: { maxHeight: 280 } }}
+                                        filterOptions={(options, state) => {
+                                            const q = state.inputValue.trim().toLowerCase();
+                                            if (!q) return options;
+                                            return options.filter((o) =>
+                                                o.toLowerCase().includes(q),
+                                            );
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                id="rutine-ejercicio"
+                                                name={field.name}
+                                                inputRef={field.ref}
+                                                hiddenLabel
+                                                placeholder="Buscar ejercicio…"
+                                                variant="outlined"
+                                                error={!!errors.ejercicio}
+                                                helperText={
+                                                    errors.ejercicio
+                                                        ? 'Selecciona un ejercicio'
+                                                        : undefined
+                                                }
+                                                aria-labelledby="rutine-ejercicio-label"
+                                            />
+                                        )}
+                                    />
+                                </FormControl>
+                            )}
+                        />
 
                         {/* Series */}
                         <FormControl fullWidth>
@@ -187,18 +273,25 @@ export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }:
                                     />
                                     {errors.pesoUnilateral && <span style={{ color: 'red' }}>Requerido</span>}
                                 </FormControl>
-                                <FormControl fullWidth>
-                                    <InputLabel id="unidad-peso-unilateral-label" className='label-field'>Unidad</InputLabel>
-                                    <Select
-                                        labelId="unidad-peso-unilateral-label"
-                                        label="Unidad"
-                                        defaultValue="KG"
-                                        {...register('unidadPesoUnilateral')}
-                                    >
-                                        <MenuItem value="KG">KG</MenuItem>
-                                        <MenuItem value="LB">LB</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                <Controller
+                                    name="unidadPesoUnilateral"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <FormControl fullWidth>
+                                            <InputLabel id="unidad-peso-unilateral-label" className='label-field'>Unidad</InputLabel>
+                                            <Select
+                                                labelId="unidad-peso-unilateral-label"
+                                                label="Unidad"
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                onBlur={field.onBlur}
+                                            >
+                                                <MenuItem value="KG">KG</MenuItem>
+                                                <MenuItem value="LB">LB</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    )}
+                                />
                             </Box>
                         )}
 
@@ -208,18 +301,25 @@ export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }:
                                 <input id="peso-input" type="number" min={0} {...register('peso', { required: true, min: 0 })} />
                                 {errors.peso && <span style={{ color: 'red' }}>Requerido</span>}
                             </FormControl>
-                            <FormControl fullWidth>
-                                <InputLabel id="unidad-peso-label" className='label-field'>Unidad</InputLabel>
-                                <Select
-                                    labelId="unidad-peso-label"
-                                    label="Unidad"
-                                    defaultValue="KG"
-                                    {...register('unidadPeso')}
-                                >
-                                    <MenuItem value="KG">KG</MenuItem>
-                                    <MenuItem value="LB">LB</MenuItem>
-                                </Select>
-                            </FormControl>
+                            <Controller
+                                name="unidadPeso"
+                                control={control}
+                                render={({ field }) => (
+                                    <FormControl fullWidth>
+                                        <InputLabel id="unidad-peso-label" className='label-field'>Unidad</InputLabel>
+                                        <Select
+                                            labelId="unidad-peso-label"
+                                            label="Unidad"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            onBlur={field.onBlur}
+                                        >
+                                            <MenuItem value="KG">KG</MenuItem>
+                                            <MenuItem value="LB">LB</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            />
                         </Box>
 
                         {/* Descanso y unidad */}
@@ -229,18 +329,25 @@ export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }:
                                 <input id="descanso-input" type="number" min={0} {...register('descanso', { required: true, min: 0 })} />
                                 {errors.descanso && <span style={{ color: 'red' }}>Requerido</span>}
                             </FormControl>
-                            <FormControl fullWidth>
-                                <InputLabel id="unidad-descanso-label" className='label-field'>Unidad</InputLabel>
-                                <Select
-                                    labelId="unidad-descanso-label"
-                                    label="Unidad"
-                                    defaultValue="min"
-                                    {...register('unidadDescanso')}
-                                >
-                                    <MenuItem value="min">Minutos</MenuItem>
-                                    <MenuItem value="seg">Segundos</MenuItem>
-                                </Select>
-                            </FormControl>
+                            <Controller
+                                name="unidadDescanso"
+                                control={control}
+                                render={({ field }) => (
+                                    <FormControl fullWidth>
+                                        <InputLabel id="unidad-descanso-label" className='label-field'>Unidad</InputLabel>
+                                        <Select
+                                            labelId="unidad-descanso-label"
+                                            label="Unidad"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            onBlur={field.onBlur}
+                                        >
+                                            <MenuItem value="min">Minutos</MenuItem>
+                                            <MenuItem value="seg">Segundos</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            />
                         </Box>
 
                         {/* Frecuencia */}
@@ -276,7 +383,7 @@ export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }:
                                             }
                                         }}
                                     >
-                                        {DAYS.map((day) => (
+                                        {WEEKDAYS.map((day) => (
                                             <MenuItem key={day} value={day} disabled={field.value.length >= frecuencia && !field.value.includes(day)}>
                                                 <Checkbox checked={field.value.indexOf(day) > -1} />
                                                 <ListItemText primary={day} />
@@ -288,7 +395,9 @@ export default function AlertDialogSlide({ open, handleClose, onSubmitHandler }:
                             {errors.dias && <span style={{ color: 'red' }}>{errors.dias.message as string}</span>}
                         </FormControl>
 
-                        <Button type="submit" variant="contained" color="primary">Crear rutina</Button>
+                        <Button type="submit" variant="contained" color="primary">
+                            {isEditing ? 'Guardar cambios' : 'Crear rutina'}
+                        </Button>
                     </Box>
                 </DialogContent>
             </Dialog>

@@ -43,3 +43,8 @@
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+.page-rutine-container .rutines-component--empty {
+    justify-content: center;
+    min-height: min(52vh, 28rem);
+}

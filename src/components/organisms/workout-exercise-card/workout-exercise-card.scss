@@ -1,0 +1,223 @@
+$orange-icon: #f27a3d;
+$text-primary: #1f2937;
+$border-ui: #d1d5db;
+$black: #111827;
+
+.workout-exercise-card.MuiCard-root {
+  border-radius: 1.5rem;
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+
+  .workout-exercise-card__inner.MuiCardContent-root {
+    padding: 1.5rem 1.5rem 1.25rem;
+
+    &:last-child {
+      padding-bottom: 1.5rem;
+    }
+  }
+
+  .workout-exercise-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 0.75rem;
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px #2563eb;
+    }
+  }
+
+  .workout-exercise-card__title-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .workout-exercise-card__icon {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: $orange-icon;
+    box-shadow: 0 4px 14px rgba(242, 122, 61, 0.35);
+
+    .MuiSvgIcon-root {
+      font-size: 1.5rem;
+    }
+  }
+
+  .workout-exercise-card__title.MuiTypography-h6 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.25;
+    color: $text-primary;
+    word-break: break-word;
+  }
+
+  .workout-exercise-card__chevron {
+    flex-shrink: 0;
+    color: #6b7280;
+    transition: transform 0.2s ease;
+
+    &--open {
+      transform: rotate(180deg);
+    }
+  }
+
+  .workout-exercise-card__collapse-inner {
+    margin-top: 1.25rem;
+  }
+}
+
+/* Panel de serie — referencia UX: alto contraste, bordes suaves, CTA negro */
+.workout-set-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.25rem;
+  padding: 1.25rem 1rem 1rem;
+  background: #fff;
+}
+
+.workout-set-panel__title {
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+  color: $text-primary !important;
+  line-height: 1.35 !important;
+}
+
+.workout-set-panel__row {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.workout-set-panel__step-btn {
+  flex: 0 0 3rem;
+  width: 3rem;
+  min-height: 3.25rem;
+  border: 1px solid $border-ui;
+  border-radius: 0.75rem;
+  background: #fff;
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1;
+  color: $text-primary;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+.workout-set-panel__value-shell {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 3.25rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid $border-ui;
+  border-radius: 0.85rem;
+  background: #fff;
+  min-width: 0;
+
+  &--reps {
+    align-items: center;
+  }
+}
+
+.workout-set-panel__value-input {
+  flex: 0 1 auto;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-size: 1.65rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $text-primary;
+  text-align: center;
+  outline: none;
+  max-width: 100%;
+
+  /* Ocultar flechas number en WebKit */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+.workout-set-panel__value-input--reps {
+  font-size: 1.65rem;
+}
+
+.workout-set-panel__unit {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.workout-set-panel__field-label {
+  margin: 0 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  color: $text-primary !important;
+}
+
+.workout-set-panel__total {
+  margin: 0 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.45 !important;
+}
+
+.workout-set-panel__actions {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.workout-set-panel__complete.MuiButton-root {
+  padding: 0.9rem 0.75rem !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  background-color: $black !important;
+  color: #fff !important;
+
+  &:hover {
+    background-color: #000 !important;
+  }
+}

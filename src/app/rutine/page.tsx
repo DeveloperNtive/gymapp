@@ -1,45 +1,85 @@
 'use client';
 
-import WeekComponent from "../components/organisms/week/week";
-import FloatingActionButtons from "../components/atoms/fabicon/fabicon";
-import Slide from '@mui/material/Slide';
-import { forwardRef, useState } from "react";
-import { TransitionProps } from '@mui/material/transitions';
-import AlertDialogSlide from "../components/atoms/modal/modal";
+import { useMemo, useState } from "react";
+import WeekComponent from "../../components/organisms/week/week";
+import FloatingActionButtons from "../../components/atoms/fabicon/fabicon";
+import AlertDialogSlide from "../../components/atoms/modal/modal";
+import CardComponent from "../../components/atoms/card/card";
+import RestDayEmpty from "../../components/molecules/rest-day-empty/rest-day-empty";
+import { RutineCardData } from "@/types/rutineCardData";
+import useStorage from "@/hooks/useStorage";
+import { WEEKDAYS, getTodayWeekdayIndex } from "@/constants/weekday";
 import './rutine.scss';
-import CardComponent, { type RutineCardData } from "../components/atoms/card/card";
-
-type Rutine = RutineCardData;
 
 export default function RutinaPage() {
   const [open, setOpen] = useState(false);
-  const [rutines, setRutines] = useState<Rutine[]>([{ id: 1, ejercicio: "Peso muerto", series: 4, repeticiones: 8, esUnilateral: true, peso: 100, unidadPeso: "KG", pesoUnilateral: 50, unidadPesoUnilateral: "KG", descanso: 3, unidadDescanso: "min", frecuencia: 3, dias: ["Lunes", "Martes", "Miércoles"] }]);
+  const [editingRutine, setEditingRutine] = useState<RutineCardData | null>(null);
+  const [selectedDay, setSelectedDay] = useState(getTodayWeekdayIndex);
+  const { rutines, addRutine, updateRutine, removeRutine } = useStorage();
+
+  const dayLabel = WEEKDAYS[selectedDay];
+  const todayIndex = getTodayWeekdayIndex();
+  const isSelectedToday = selectedDay === todayIndex;
+  const rutinesForDay = useMemo(
+    () => rutines.filter((r) => (r.dias ?? []).includes(dayLabel)),
+    [rutines, dayLabel],
+  );
 
   const handleClickOpen = () => {
+    setEditingRutine(null);
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+    setEditingRutine(null);
   };
 
-  const handleCreateRutine = (data: Omit<Rutine, 'id'>) => {
-    console.log('data', JSON.stringify(data));
-    setRutines((prev) => [...prev, { ...data, id: prev.length + 1 }]);
+  const handleSaveRutine = (data: Omit<RutineCardData, 'id'>, id?: number) => {
+    if (id !== undefined) updateRutine(id, data);
+    else addRutine(data);
   };
 
   return (
     <div className="page-rutine-container">
       <div className="week-component">
-        <WeekComponent />
+        <WeekComponent selectedDay={selectedDay} onDaySelected={setSelectedDay} />
       </div>{/*Iniciales de los dias de la semana*/}
       <div className="floating-action-buttons">
         <FloatingActionButtons onClick={handleClickOpen} />
       </div>{/*Botones flotantes*/}
-      <div className="rutines-component">{rutines.map((rutine: Rutine) => (
-        <CardComponent key={rutine.id} rutine={rutine} />
-      ))}</div> {/*Lista de tarjetas de rutinas*/}
-      <AlertDialogSlide open={open} handleClose={handleClose} onSubmitHandler={handleCreateRutine} />{/*Modal*/}
+      <div
+        className={
+          rutinesForDay.length === 0
+            ? 'rutines-component rutines-component--empty'
+            : 'rutines-component'
+        }
+      >
+        {rutinesForDay.length > 0 ? (
+          rutinesForDay.map((rutine: RutineCardData) => (
+            <CardComponent
+              key={rutine.id}
+              rutine={rutine}
+              onEdit={() => {
+                setEditingRutine(rutine);
+                setOpen(true);
+              }}
+              onDelete={() => removeRutine(rutine.id)}
+            />
+          ))
+        ) : (
+          <RestDayEmpty
+            isSelectedToday={isSelectedToday}
+            weekdayLabel={dayLabel}
+          />
+        )}
+      </div> {/*Lista de tarjetas de rutinas*/}
+      <AlertDialogSlide
+        open={open}
+        handleClose={handleClose}
+        editingRutine={editingRutine}
+        onSave={handleSaveRutine}
+      />
     </div>
   )
 }

@@ -2,12 +2,15 @@
 
 import './card.scss';
 
+import { useState } from "react";
 import {
     Card,
     CardContent,
     Typography,
     Box,
     IconButton,
+    Popover,
+    Button,
 } from "@mui/material";
 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -18,24 +21,20 @@ import TimerIcon from "@mui/icons-material/Timer";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ScaleIcon from "@mui/icons-material/Scale";
+import { RutineCardData } from "@/types/rutineCardData";
 
-export type RutineCardData = {
-    id: number;
-    ejercicio: string;
-    series: number;
-    repeticiones: number;
-    esUnilateral: boolean;
-    peso: number;
-    unidadPeso: 'KG' | 'LB';
-    pesoUnilateral: number;
-    unidadPesoUnilateral: 'KG' | 'LB';
-    descanso: number;
-    unidadDescanso: 'min' | 'seg';
-    frecuencia: number;
-    dias: string[];
-};
+export default function CardComponent({
+    rutine,
+    onEdit,
+    onDelete,
+}: {
+    rutine: RutineCardData;
+    onEdit: () => void;
+    onDelete: () => void;
+}) {
+    const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+    const menuOpen = Boolean(menuAnchor);
 
-export default function CardComponent({ rutine }: { rutine: RutineCardData }) {
     const esUnilateral = rutine.esUnilateral === true;
 
     const descansoUnidad =
@@ -56,9 +55,48 @@ export default function CardComponent({ rutine }: { rutine: RutineCardData }) {
                         </Typography>
                     </Box>
 
-                    <IconButton className="menu-button" size="small" aria-label="Más opciones">
+                    <IconButton
+                        className="menu-button"
+                        size="small"
+                        aria-label="Más opciones"
+                        aria-haspopup="true"
+                        aria-expanded={menuOpen ? "true" : undefined}
+                        onClick={(e) => setMenuAnchor(e.currentTarget)}
+                    >
                         <MoreVertIcon />
                     </IconButton>
+                    <Popover
+                        open={menuOpen}
+                        anchorEl={menuAnchor}
+                        onClose={() => setMenuAnchor(null)}
+                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                        transformOrigin={{ vertical: "top", horizontal: "right" }}
+                        slotProps={{
+                            paper: { sx: { p: 1, display: "flex", flexDirection: "column", gap: 0.5, minWidth: 140 } },
+                        }}
+                    >
+                        <Button
+                            fullWidth
+                            size="small"
+                            onClick={() => {
+                                setMenuAnchor(null);
+                                onEdit();
+                            }}
+                        >
+                            Modificar
+                        </Button>
+                        <Button
+                            fullWidth
+                            size="small"
+                            color="error"
+                            onClick={() => {
+                                setMenuAnchor(null);
+                                onDelete();
+                            }}
+                        >
+                            Eliminar
+                        </Button>
+                    </Popover>
                 </Box>
 
                 <Box

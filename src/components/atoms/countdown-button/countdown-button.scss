@@ -1,0 +1,12 @@
+.countdown-button.MuiButton-root {
+  min-width: 7.5rem;
+  text-transform: none;
+  font-weight: 600;
+  border-color: #3b71ca;
+  color: #1f2937;
+
+  &:disabled {
+    border-color: rgba(59, 113, 202, 0.5);
+    color: #1f2937;
+  }
+}

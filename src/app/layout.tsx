@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import HeaderComponent from "../components/atoms/header/header";
+import TabClientWrapper from "../components/organisms/tabs/TabClientWrapper";
 import "./globals.css";
-import HeaderComponent from "./components/atoms/header/header";
-import TabClientWrapper from "./components/organisms/tabs/TabClientWrapper";
+import "./layout.scss";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,11 +43,15 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-white">
-        <HeaderComponent/>
+        <div>
+          <HeaderComponent />
+        </div>
         <main className="flex-1 overflow-y-auto pt-16 pb-20">
           {children}
         </main>
-        <TabClientWrapper />
+        <footer className="fixed bottom-0 left-0 right-0">
+          <TabClientWrapper />
+        </footer>
       </body>
     </html>
   );

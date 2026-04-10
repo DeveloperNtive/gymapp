@@ -24,6 +24,11 @@
     transition: border 0.2s;
 }
 
+.day.today:not(.selected) {
+    border-color: #64748b;
+    font-weight: 600;
+}
+
 .day.selected {
     border: 2px solid #2563eb;
 }
