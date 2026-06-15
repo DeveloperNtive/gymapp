@@ -1,17 +1,22 @@
 'use client';
 
-import { useMemo, useState } from "react";
-import WeekComponent from "../../components/organisms/week/week";
-import FloatingActionButtons from "../../components/atoms/fabicon/fabicon";
-import AlertDialogSlide from "../../components/atoms/modal/modal";
-import CardComponent from "../../components/atoms/card/card";
-import RestDayEmpty from "../../components/molecules/rest-day-empty/rest-day-empty";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import WeekComponent from "@/components/organisms/week/week";
+import FloatingActionButtons from "@/components/atoms/fabicon/fabicon";
+import AlertDialogSlide from "@/components/atoms/modal/modal";
+import CardComponent from "@/components/atoms/card/card";
+import RestDayEmpty from "@/components/molecules/rest-day-empty/rest-day-empty";
 import { RutineCardData } from "@/types/rutineCardData";
 import useStorage from "@/hooks/useStorage";
 import { WEEKDAYS, getTodayWeekdayIndex } from "@/constants/weekday";
 import './rutine.scss';
+import { getSessionResponse } from "@/types/getSession";
+import supabase from "@/constants/supabase";
 
 export default function RutinaPage() {
+  const router = useRouter();
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [open, setOpen] = useState(false);
   const [editingRutine, setEditingRutine] = useState<RutineCardData | null>(null);
   const [selectedDay, setSelectedDay] = useState(getTodayWeekdayIndex);
@@ -39,6 +44,31 @@ export default function RutinaPage() {
     if (id !== undefined) updateRutine(id, data);
     else addRutine(data);
   };
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data, error }) => {
+      console.log('DATA USER', data.user);
+      if (error) {
+        setIsCheckingSession(false);
+        router.replace("/login");
+        return;
+      }
+      if (data.user) {
+        router.replace("/rutine");
+        setIsCheckingSession(false);
+        return;
+      }
+    });
+
+  }, [router]);
+
+  if (isCheckingSession) {
+    return (
+      <div className="page-rutine-container">
+        <p className="text-center text-sm">Verificando sesión...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-rutine-container">

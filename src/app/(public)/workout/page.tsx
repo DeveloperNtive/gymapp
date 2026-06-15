@@ -1,16 +1,19 @@
 "use client";
 
-import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Typography } from "@mui/material";
+import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import useStorage from "@/hooks/useStorage";
+import { Box, Button, Typography } from "@mui/material";
 import { WEEKDAYS, getTodayWeekdayIndex } from "@/constants/weekday";
-import WorkoutExerciseCard from "@/components/organisms/workout-exercise-card/workout-exercise-card";
 import RestDayEmpty from "@/components/molecules/rest-day-empty/rest-day-empty";
+import WorkoutExerciseCard from "@/components/organisms/workout-exercise-card/workout-exercise-card";
+import supabase from "@/constants/supabase";
 import "./workout.scss";
 
 export default function WorkoutPage() {
   const router = useRouter();
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const { rutines } = useStorage();
   const todayIndex = getTodayWeekdayIndex();
   const dayLabel = WEEKDAYS[todayIndex];
@@ -25,6 +28,28 @@ export default function WorkoutPage() {
     if (!ok) return;
     router.push("/");
   };
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (error) {
+        setIsCheckingSession(true);
+        return;
+      }
+      if (data.user) {
+        router.replace("/workout");
+        setIsCheckingSession(false);
+        return;
+      }
+    });
+  }, [router]);
+
+  if (isCheckingSession) {
+    return (
+      <div className="page-workout">
+        <p>Verificando sesión...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-workout">

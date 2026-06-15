@@ -1,0 +1,222 @@
+.signup-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 2.5rem 1rem;
+  color: #fff;
+  background: linear-gradient(135deg, #09090b 0%, #450a0a 50%, #18181b 100%);
+}
+
+.signup-page--checking {
+  justify-content: center;
+}
+
+.signup-checking-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #d4d4d8;
+}
+
+.signup-card {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 1rem;
+  background: rgba(24, 24, 27, 0.8);
+  padding: 2rem;
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.25);
+  backdrop-filter: blur(4px);
+}
+
+.signup-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: #fca5a5;
+}
+
+.signup-title {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.signup-subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: #d4d4d8;
+}
+
+.signup-form {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.signup-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e4e4e7;
+}
+
+.signup-input {
+  width: 100%;
+  border: 1px solid #3f3f46;
+  border-radius: 0.75rem;
+  background: #09090b;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #fff;
+  -webkit-tap-highlight-color: transparent;
+  outline: 2px solid transparent;
+  outline-offset: 0;
+  box-shadow: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-color: #f87171;
+    box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.4);
+  }
+}
+
+.signup-error-text {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: #fca5a5;
+}
+
+.signup-recommendation-text {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: #fcd34d;
+}
+
+.signup-submit-button {
+  width: 100%;
+  border: none;
+  border-radius: 0.75rem;
+  background: #ef4444;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.signup-submit-button:hover:not(:disabled) {
+  background: #f87171;
+}
+
+.signup-submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.signup-server-message {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  color: #e4e4e7;
+}
+
+.signup-login-text {
+  margin: 1.5rem 0 0;
+  font-size: 0.875rem;
+  color: #d4d4d8;
+}
+
+.signup-login-link {
+  font-weight: 600;
+  color: #fca5a5;
+  text-decoration: underline;
+  text-decoration-color: rgba(248, 113, 113, 0.6);
+  text-underline-offset: 4px;
+  transition: color 0.15s ease;
+}
+
+.signup-login-link:hover {
+  color: #fecaca;
+}
+
+.signup-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.signup-modal {
+  width: 100%;
+  max-width: 28rem;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 1rem;
+  background: #18181b;
+  padding: 1.5rem;
+  box-shadow: 0 0 45px rgba(239, 68, 68, 0.3);
+}
+
+.signup-modal-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: #fca5a5;
+}
+
+.signup-modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.signup-modal-text {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #d4d4d8;
+}
+
+.signup-modal-email {
+  font-weight: 600;
+  color: #f4f4f5;
+}
+
+.signup-modal-button {
+  width: 100%;
+  border: none;
+  border-radius: 0.75rem;
+  background: #ef4444;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.signup-modal-button:hover {
+  background: #f87171;
+}

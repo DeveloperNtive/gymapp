@@ -1,3 +1,5 @@
+"use client";
+
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';

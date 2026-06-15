@@ -7,13 +7,12 @@ import {
     getTodayWeekdayIndex,
 } from '@/constants/weekday';
 
-export default function WeekComponent({
-    selectedDay,
-    onDaySelected,
-}: {
+interface WeekComponentProps {
     selectedDay: number;
     onDaySelected: (day: number) => void;
-}) {
+}
+
+export default function WeekComponent({ selectedDay, onDaySelected }: WeekComponentProps) {
     const todayIndex = getTodayWeekdayIndex();
 
     return (

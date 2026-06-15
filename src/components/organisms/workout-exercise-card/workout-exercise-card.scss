@@ -145,6 +145,12 @@ $black: #111827;
   border-radius: 0.85rem;
   background: #fff;
   min-width: 0;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: #9ca3af;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  }
 
   &--reps {
     align-items: center;
@@ -154,15 +160,26 @@ $black: #111827;
 .workout-set-panel__value-input {
   flex: 0 1 auto;
   min-width: 0;
-  border: none;
+  border: none !important;
   background: transparent;
-  font-size: 1.65rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: $text-primary;
-  text-align: center;
-  outline: none;
+  font-size: 1.65rem !important;
+  font-weight: 700 !important;
+  font-variant-numeric: tabular-nums !important;
+  color: $text-primary !important;
+  text-align: center !important;
   max-width: 100%;
+  -webkit-tap-highlight-color: transparent;
+  outline: 2px solid transparent;
+  outline-offset: 0;
+  box-shadow: none;
+
+  &:focus,
+  &:focus-visible,
+  &:active {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
 
   /* Ocultar flechas number en WebKit */
   &::-webkit-outer-spin-button,
@@ -175,11 +192,12 @@ $black: #111827;
     -moz-appearance: textfield;
     appearance: textfield;
   }
+
+  &--reps {
+    font-size: 1.65rem;
+  }
 }
 
-.workout-set-panel__value-input--reps {
-  font-size: 1.65rem;
-}
 
 .workout-set-panel__unit {
   font-size: 0.95rem;
@@ -207,7 +225,7 @@ $black: #111827;
   margin-top: 0.25rem;
 }
 
-.workout-set-panel__complete.MuiButton-root {
+.workout-set-panel__complete {
   padding: 0.9rem 0.75rem !important;
   border-radius: 999px !important;
   font-weight: 700 !important;
