@@ -110,7 +110,7 @@ export default function Login() {
               className="login-input"
               placeholder="tuemail@ejemplo.com"
               {...register("email", {
-                value: "oskr9625.oemp@gmail.com",
+                value: "",
                 required: "El email es obligatorio.",
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -134,7 +134,7 @@ export default function Login() {
               className="login-input"
               placeholder="••••••••"
               {...register("password", {
-                value: "05C4r@qwer",
+                value: "",
                 required: "La contraseña es obligatoria.",
                 validate: passwordRules,
               })}
